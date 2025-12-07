@@ -254,12 +254,12 @@ namespace UnlockServer
         private object lockLock = new object();
 
         /// <summary>
-        /// 锁定超时，默认60秒最多锁定一次，防止找不到设备重复锁定导致电脑无法解锁
+        /// 锁定超时，默认10秒最多锁定一次，防止找不到设备重复锁定导致电脑无法解锁
         /// </summary>
         private TimeSpan LockTimeOut = TimeSpan.FromMilliseconds(10 * 1000);
 
         /// <summary>
-        /// 解锁超时，默认60秒最多解锁一次
+        /// 解锁超时，默认10秒最多解锁一次
         /// </summary>
         private TimeSpan UnLockTimeOut = TimeSpan.FromMilliseconds(10 * 1000);
 
@@ -267,22 +267,58 @@ namespace UnlockServer
         DateTime lastUnLockTime = DateTime.MinValue;
 
         /// <summary>
-        /// 超时锁定
+        /// 锁定请求时间队列，用于防波动
+        /// </summary>
+        private Queue<DateTime> lockRequestQueue = new Queue<DateTime>();
+        
+        /// <summary>
+        /// 锁定防波动时间窗口（1分钟）
+        /// </summary>
+        private TimeSpan lockWindowTime = TimeSpan.FromMinutes(1);
+        
+        /// <summary>
+        /// 时间窗口内需要达到的锁定请求次数
+        /// </summary>
+        private const int requiredLockCount = 10;
+
+        /// <summary>
+        /// 超时锁定（防波动版本：1分钟内需要10次请求才执行锁定）
         /// </summary>
         private void LockByTimeOut()
         {
             DateTime now = DateTime.Now;
 
-            if ((now - lastLockTime) > LockTimeOut)
+            // 添加当前请求时间到队列
+            lockRequestQueue.Enqueue(now);
+
+            // 移除时间窗口之外的旧请求
+            while (lockRequestQueue.Count > 0 && (now - lockRequestQueue.Peek()) > lockWindowTime)
             {
-                //这里判断时间是否超过 LockTimeOut
-                lastLockTime = DateTime.Now;
-                WanClient.LockPc();
+                lockRequestQueue.Dequeue();
+            }
+
+            // 检查时间窗口内的请求次数
+            if (lockRequestQueue.Count >= requiredLockCount)
+            {
+                // 达到阈值，执行锁定
+                if ((now - lastLockTime) > LockTimeOut)
+                {
+                    LogHelper.WriteLine($"1分钟内锁定请求达到{lockRequestQueue.Count}次，执行锁定");
+                    lastLockTime = DateTime.Now;
+                    WanClient.LockPc();
+                    
+                    // 清空队列，避免重复锁定
+                    lockRequestQueue.Clear();
+                }
+            }
+            else
+            {
+                LogHelper.WriteLine($"锁定请求计数: {lockRequestQueue.Count}/{requiredLockCount}（需在1分钟内达到{requiredLockCount}次）");
             }
         }
 
         /// <summary>
-        /// 超时锁定
+        /// 超时解锁
         /// </summary>
         private bool UnLockByTimeOut()
         {
@@ -292,6 +328,10 @@ namespace UnlockServer
             {
                 //这里判断时间是否超过 UnLockTimeOut
                 lastUnLockTime = DateTime.Now;
+                
+                // 检测到设备，清空锁定请求队列
+                lockRequestQueue.Clear();
+                
                 return WanClient.UnlockPc();
             }
             return true;
