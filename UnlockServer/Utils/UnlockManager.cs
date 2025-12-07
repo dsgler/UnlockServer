@@ -206,6 +206,7 @@ namespace UnlockServer
                                 Console.WriteLine("信号强度够且处于锁屏状态，解锁！");
 
                                 sessionSwitchClass.dounlocking = true;
+                                sessionSwitchClass.isLockBySoft = false;
                                 bool ret = UnLockByTimeOut();
 
                                 if (ret == false)
