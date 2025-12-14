@@ -209,6 +209,15 @@ namespace UnlockServer
                                 sessionSwitchClass.isLockBySoft = false;
                                 bool ret = UnLockByTimeOut();
 
+
+                                if (!Environment.UserInteractive)
+                                {
+                                    LogHelper.WriteLine("检测到不在交互式桌面上运行，退出程序！");
+                                    Application.Exit();
+                                    Environment.Exit(0);
+                                    return;
+                                }
+
                                 if (ret == false)
                                 {
                                     isunlockfail = true;

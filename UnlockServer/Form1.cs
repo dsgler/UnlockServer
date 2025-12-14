@@ -32,25 +32,35 @@ namespace UnlockServer
             this.Load += Form1_Load; 
             var softwareVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.Text = "蓝牙解锁工具_v" + softwareVersion;
-            this.notifyIcon1.Visible = true;
+            this.notifyIcon1.Visible = false;
             this.FormClosing += Form1_FormClosing;
             this.FormClosed += Form1_FormClosed;
+            this.Resize += Form1_Resize;
+        }
 
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.notifyIcon1.Visible = true;
+                this.ShowInTaskbar = false;
+                this.Hide();
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.ApplicationExitCall)
             {  
-                    this.notifyIcon1.Visible = false;
-                    Application.Exit(); 
+                this.notifyIcon1.Visible = false;
+                Application.Exit(); 
             }
-            else
+            else if (e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;
-                this.WindowState = FormWindowState.Minimized;
+                this.notifyIcon1.Visible = false;
                 this.ShowInTaskbar = false;
-                this.Hide(); 
+                this.Hide();
             }
         }
 
@@ -247,23 +257,12 @@ namespace UnlockServer
             Process.Start(new ProcessStartInfo("https://www.52pojie.cn/thread-1678522-1-1.html"));  
         }
 
-        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if(e.Button == MouseButtons.Left)
-            {
-                this.Show();
-                this.ShowInTaskbar = true;
-                this.WindowState = FormWindowState.Normal;
-                this.TopMost = true;
-                this.TopMost = false; 
-            }
-        }
-
         private void 显示ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Show();
             this.ShowInTaskbar = true;
             this.WindowState = FormWindowState.Normal;
+            this.notifyIcon1.Visible = false;
             this.TopMost = true;
             this.TopMost = false; 
         }
@@ -439,7 +438,9 @@ namespace UnlockServer
 
         private void 隐藏ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            this.notifyIcon1.Visible = false;
+            this.ShowInTaskbar = false;
+            this.Hide();
         }
 
         private void btn_searchDevice_Click(object sender, EventArgs e)
@@ -460,6 +461,19 @@ namespace UnlockServer
                 unlockManager.Stop();
                 unlockManager.Start();
 
+            }
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                this.Show();
+                this.ShowInTaskbar = true;
+                this.WindowState = FormWindowState.Normal;
+                this.notifyIcon1.Visible = false;
+                this.TopMost = true;
+                this.TopMost = false;
             }
         }
     }

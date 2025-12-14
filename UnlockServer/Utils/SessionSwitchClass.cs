@@ -66,11 +66,13 @@ namespace UnlockServer
             {
                 //软件锁定
                 isUnlockBySoft = true;
+                LogHelper.WriteLine("设定为软件解锁");
             }
             else
             {
                 //锁屏后执行 
-                isUnlockBySoft = false; 
+                isUnlockBySoft = false;
+                LogHelper.WriteLine("设定为非软件解锁");
             }
             dounlocking = false;
         }
@@ -84,11 +86,13 @@ namespace UnlockServer
             {
                 //软件锁定
                 isLockBySoft = true;
+                LogHelper.WriteLine("设定为软件锁定");
             }
             else
             {
                 //锁屏后执行 
-                isLockBySoft = false; 
+                isLockBySoft = false;
+                LogHelper.WriteLine("设定为非软件锁定");
             }
             dolocking = false;
         }

@@ -33,7 +33,9 @@ namespace UnlockServer
         /// </summary>
         [STAThread]
         static void Main(string[] args)
-        { 
+        {
+            LogHelper.WriteLine($"交互 {Environment.UserInteractive}");
+            
             ishideRun = args.Contains("hide");
             if (checkIsSingle()==false)
             {
