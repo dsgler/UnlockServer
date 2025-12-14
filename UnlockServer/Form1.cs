@@ -103,6 +103,8 @@ namespace UnlockServer
         {
 
             checkBox1.Checked = AutoStartHelper.IsExists();
+            ckb_enableLog.Checked = OperateIniFile.ReadIniInt("setting", "enablelog", 1) == 1;
+            LogHelper.IsLogEnabled = ckb_enableLog.Checked;
 
             txtip.Text = OperateIniFile.ReadSafeString("setting", "ip", txtip.Text);
             txtpt.Text = OperateIniFile.ReadSafeString("setting", "pt", txtpt.Text);
@@ -475,6 +477,13 @@ namespace UnlockServer
                 this.TopMost = true;
                 this.TopMost = false;
             }
+        }
+
+        private void ckb_enableLog_Click(object sender, EventArgs e)
+        {
+            var ischeck = ckb_enableLog.Checked;
+            OperateIniFile.WriteIniInt("setting", "enablelog", ischeck ? 1 : 0);
+            LogHelper.IsLogEnabled = ischeck;
         }
     }
 }

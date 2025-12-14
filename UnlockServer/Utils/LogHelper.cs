@@ -13,6 +13,8 @@ namespace UnlockServer
         private static readonly int maxLogFileLines = 10000;
         private static int currentLineCount = 0;
 
+        public static bool IsLogEnabled { get; set; } = true;
+
         static LogHelper()
         {
             string logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
@@ -88,6 +90,11 @@ namespace UnlockServer
 
         public static void WriteLine(string message)
         {
+            if (!IsLogEnabled)
+            {
+                return;
+            }
+
             string logMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}";
             
             Console.WriteLine(logMessage);

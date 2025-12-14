@@ -54,6 +54,7 @@
             this.rdbble = new System.Windows.Forms.RadioButton();
             this.button2 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.ckb_enableLog = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.ckb_autolock = new System.Windows.Forms.CheckBox();
             this.ckb_autounlock = new System.Windows.Forms.CheckBox();
@@ -301,6 +302,18 @@
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.Click += new System.EventHandler(this.checkBox1_Click);
             // 
+            // ckb_enableLog
+            // 
+            this.ckb_enableLog.AutoSize = true;
+            this.ckb_enableLog.Location = new System.Drawing.Point(900, 620);
+            this.ckb_enableLog.Margin = new System.Windows.Forms.Padding(6);
+            this.ckb_enableLog.Name = "ckb_enableLog";
+            this.ckb_enableLog.Size = new System.Drawing.Size(138, 28);
+            this.ckb_enableLog.TabIndex = 21;
+            this.ckb_enableLog.Text = "启用日志";
+            this.ckb_enableLog.UseVisualStyleBackColor = true;
+            this.ckb_enableLog.Click += new System.EventHandler(this.ckb_enableLog_Click);
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -409,6 +422,7 @@
             this.Controls.Add(this.ckb_autolock);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.ckb_enableLog);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.rdbble);
             this.Controls.Add(this.rdbclassic);
@@ -463,6 +477,7 @@
         private System.Windows.Forms.RadioButton rdbble;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox ckb_enableLog;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox ckb_autolock;
         private System.Windows.Forms.CheckBox ckb_autounlock;
