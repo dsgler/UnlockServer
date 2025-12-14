@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace UnlockServer
@@ -19,8 +20,51 @@ namespace UnlockServer
             {
                 Directory.CreateDirectory(logDir);
             }
+            
+            // 清理旧日志文件，仅保留最近的3个
+            CleanupOldLogFiles(logDir, 3);
+            
             logFilePath = Path.Combine(logDir, $"log_{DateTime.Now:yyyyMMdd}.txt");
             InitializeLineCount();
+        }
+
+        /// <summary>
+        /// 清理旧日志文件，仅保留指定数量的最新日志文件
+        /// </summary>
+        /// <param name="logDir">日志目录</param>
+        /// <param name="keepCount">保留的日志文件数量</param>
+        private static void CleanupOldLogFiles(string logDir, int keepCount)
+        {
+            try
+            {
+                // 获取所有日志文件
+                var logFiles = Directory.GetFiles(logDir, "log_*.txt")
+                    .Select(f => new FileInfo(f))
+                    .OrderByDescending(f => f.LastWriteTime)
+                    .ToList();
+
+                // 如果日志文件数量超过保留数量，删除多余的
+                if (logFiles.Count > keepCount)
+                {
+                    var filesToDelete = logFiles.Skip(keepCount);
+                    foreach (var file in filesToDelete)
+                    {
+                        try
+                        {
+                            file.Delete();
+                            Console.WriteLine($"已删除旧日志文件: {file.Name}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"删除日志文件失败 {file.Name}: {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"清理日志文件失败: {ex.Message}");
+            }
         }
 
         private static void InitializeLineCount()
